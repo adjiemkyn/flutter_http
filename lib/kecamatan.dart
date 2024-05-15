@@ -2,46 +2,37 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'kota.dart';
+import 'kelurahan.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+class Kecamatan extends StatelessWidget {
+  final Map<String, dynamic> province;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
+  Kecamatan(this.province);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Provinsi'), backgroundColor: Colors.green),
-        body: MyHomePageBody());
+        appBar: AppBar(
+          title: Text(province["name"]),
+          backgroundColor: Colors.green,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: KecamatanBody(province["id"]));
   }
 }
 
-class MyHomePageBody extends StatelessWidget {
-  const MyHomePageBody({super.key});
+class KecamatanBody extends StatelessWidget {
+  final String districtId;
 
+  KecamatanBody(this.districtId);
   @override
   Widget build(BuildContext context) {
     final apiUrl = Uri.parse(
-        "https://api.goapi.io/regional/provinsi?api_key=5c9f85c2-8c84-5191-8a76-33ec1d6b");
+        "https://api.goapi.io/regional/kecamatan?kota_id=${districtId}&api_key=5c9f85c2-8c84-5191-8a76-33ec1d6b");
 
     Future<List<dynamic>> fetchData() async {
       final response = await http.get(apiUrl);
@@ -63,15 +54,15 @@ class MyHomePageBody extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              final province = snapshot.data![index];
-
               final item = snapshot.data![index];
+              final kelurahan = snapshot.data![index];
+
               return ListTile(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Kota(province),
+                      builder: (context) => Kelurahan(kelurahan),
                     ),
                   );
                 },
